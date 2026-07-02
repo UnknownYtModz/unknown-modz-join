@@ -5,28 +5,265 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify to Join Unknown Modz</title>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #0f0f0f; color: white; }
-        .container { background: #1a1a1a; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        .btn { display: none; margin-top: 20px; padding: 12px 24px; background: #0088cc; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: bold; }
-        #status { margin-top: 15px; color: #aaa; }
+        :root {
+            --bg: #0a0e14;
+            --bg-glow: #10151f;
+            --card: #0f141c;
+            --border: #1e2733;
+            --cyan: #4ADEDE;
+            --violet: #8B5CF6;
+            --text: #E2E8F0;
+            --muted: #64748B;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(74,222,222,0.08), transparent 40%),
+                radial-gradient(circle at 80% 90%, rgba(139,92,246,0.10), transparent 40%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        /* ---------- AD SLOTS ---------- */
+        .ad-slot {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+            min-height: 60px;
+        }
+        .ad-slot .ad-inner {
+            width: 100%;
+            max-width: 728px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* ------------------------------- */
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 24px 16px;
+        }
+
+        .terminal {
+            width: 100%;
+            max-width: 420px;
+            background: linear-gradient(180deg, var(--card), #0b0f16);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 0 0 1px rgba(74,222,222,0.05), 0 20px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .terminal::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
+            animation: scan 3.5s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes scan {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .titlebar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.r { background: #ff5f57; }
+        .dot.y { background: #febc2e; }
+        .dot.g { background: #28c840; }
+        .titlebar span {
+            margin-left: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .content {
+            padding: 36px 28px 32px;
+            text-align: center;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            color: var(--cyan);
+            text-transform: uppercase;
+            margin: 0 0 10px;
+        }
+h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 12px;
+            background: linear-gradient(90deg, var(--text), var(--cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.sub {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0 0 28px;
+        }
+
+        .cf-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+            min-height: 18px;
+        }
+
+        #status.active { color: var(--cyan); }
+        #status.done { color: #34D399; }
+        #status.error { color: #F87171; }
+
+        .btn {
+            display: none;
+            margin-top: 22px;
+            padding: 13px 28px;
+            background: linear-gradient(90deg, var(--cyan), var(--violet));
+            color: #05070a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 8px 24px rgba(74,222,222,0.25);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(139,92,246,0.35);
+        }
+
+        footer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            padding: 10px 0 4px;
+            opacity: 0.6;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .terminal::before { animation: none; }
+            .btn { transition: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Unknown Modz</h1>
-        <p>Verify you are human to get your invite link</p>
-        
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAACp_SoTx_k_KB1VS" data-callback="onVerify"></div>
-        
-        <div id="status">Waiting for verification...</div>
-        <a id="join-btn" class="btn" href="#">Click here to Join</a>
+
+    <!-- ============================================= -->
+    <!-- TOP AD SLOT — paste your Adsterra ad code      -->
+    <!-- inside <div class="ad-inner"> below.           -->
+    <!-- Recommended: 728x90 Leaderboard Banner          -->
+    <!-- (Adsterra auto-shrinks to 320x50 on mobile if    -->
+    <!-- you use their "Responsive" banner option)        -->
+    <!-- ============================================= -->
+    <div class="ad-slot" id="ad-top">
+        <div class="ad-inner">
+            <script>
+   	    atOptions = {
+      	    'key' : '989f5a151470cbf79fbb5cd2f6df1cb5',
+ 	    'format' : 'iframe',
+   	    'height' : 90,
+            'width' : 728,
+            'params' : {}
+            };
+            </script>
+            <script src="https://www.highperformanceformat.com/989f5a151470cbf79fbb5cd2f6df1cb5/invoke.js"></script>
+
+        </div>
     </div>
 
+    <main>
+        <div class="terminal">
+            <div class="titlebar">
+                <span class="dot r"></span>
+                <span class="dot y"></span>
+                <span class="dot g"></span>
+                <span>access_gate.sh</span>
+            </div>
+            <div class="content">
+                <p class="eyebrow">Unknown Modz // Access Control</p>
+                <h1>Verify You're Human</h1>
+                <p class="sub">Complete the check below to generate your invite link.</p>
+
+                <div class="cf-wrap">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAACp_SoTx_k_KB1VS" data-callback="onVerify"></div>
+                </div>
+
+                <div id="status">Waiting for verification...</div>
+                <a id="join-btn" class="btn" href="#">Click here to Join</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================= -->
+    <!-- BOTTOM AD SLOT — paste your Adsterra ad code   -->
+    <!-- inside <div class="ad-inner"> below.           -->
+    <!-- Recommended: 728x90 Leaderboard, or a 300x250   -->
+    <!-- Native/Social Bar unit works well here too.     -->
+    <!-- ============================================= -->
+    <div class="ad-slot" id="ad-bottom">
+        <div class="ad-inner">
+            <!-- ADSTERRA BANNER CODE GOES HERE (BOTTOM) -->
+        </div>
+    </div>
+<footer>protected by cloudflare turnstile</footer>
+
     <script>
+        // ===== BACKEND LOGIC — UNCHANGED FROM YOUR ORIGINAL =====
         async function onVerify(token) {
-            document.getElementById('status').innerText = "Generating secure link...";
-            
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'active';
+            statusEl.innerText = "Generating secure link...";
+
             try {
                 // Change the URL below to your Cloudflare Worker URL
                 const response = await fetch('https://verification.unknown-modz.workers.dev', {
@@ -36,17 +273,20 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.link) {
-                    document.getElementById('status').innerText = "Verified! Link ready.";
+                    statusEl.className = 'done';
+                    statusEl.innerText = "Verified! Link ready.";
                     const btn = document.getElementById('join-btn');
                     btn.href = data.link;
                     btn.style.display = "inline-block";
                 } else {
-                    document.getElementById('status').innerText = "Error: " + (data.error || "Unknown error");
+                    statusEl.className = 'error';
+                    statusEl.innerText = "Error: " + (data.error || "Unknown error");
                 }
             } catch (err) {
-                document.getElementById('status').innerText = "Connection failed.";
+                statusEl.className = 'error';
+                statusEl.innerText = "Connection failed.";
             }
         }
     </script>
